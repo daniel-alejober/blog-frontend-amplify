@@ -104,16 +104,19 @@ const SignUp = () => {
         }, 2500);
       }
     } catch (error) {
-      setAlertForm(true);
-      setDataAlert({
-        colorAlert: "failure",
-        messageAlert: error.response.data.message,
-      });
-      setTimeout(() => {
-        setAlertForm(false);
-        setLoading(false);
-      }, 2500);
-      return;
+      const errorMsg = error.response.data.message;
+      if (errorMsg) {
+        setAlertForm(true);
+        setDataAlert({
+          colorAlert: "failure",
+          messageAlert: errorMsg,
+        });
+        setTimeout(() => {
+          setAlertForm(false);
+          setLoading(false);
+        }, 2500);
+        return;
+      }
     }
   };
 
