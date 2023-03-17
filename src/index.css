@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.navbarCollapseShow {
+  display: block !important;
+}
+
+.navbarCollapseNone {
+  display: none;
+}

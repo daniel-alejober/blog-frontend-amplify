@@ -4,8 +4,8 @@ import { Button } from "flowbite-react";
 import Input from "../components/Input";
 import AlertR from "../components/Alert";
 import SpinnerR from "../components/Spinner";
-import axiosClient from "../utils/axiosClient";
 import { emailRegex, nombreRegex } from "../utils/constants";
+import { createAccount } from "../request/account";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -86,11 +86,13 @@ const SignUp = () => {
       return;
     }
     try {
-      const { data } = await axiosClient.post("/users", {
+      const data = await createAccount({
         email: dataAccount.email,
         password: dataAccount.password,
         username: dataAccount.username,
       });
+
+      if (data.status !== 200) throw data;
       if (data.success) {
         setAlertForm(true);
         setDataAlert({
@@ -104,7 +106,7 @@ const SignUp = () => {
         }, 2500);
       }
     } catch (error) {
-      const errorMsg = error.response.data.message;
+      const errorMsg = error.data.message;
       if (errorMsg) {
         setAlertForm(true);
         setDataAlert({
