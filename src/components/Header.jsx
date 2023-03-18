@@ -45,6 +45,7 @@ const Header = () => {
       letterSpacing: "1px",
       border: "none",
       margin: "3px 0",
+      cursor: "pointer",
     };
   };
 
@@ -72,11 +73,11 @@ const Header = () => {
           <>
             <Navbar.Link
               as={Link}
-              to="/signin"
+              to="/newarticle"
               style={stlylesBtn("#3498db")}
               onClick={handleLinkClick}
             >
-              My Articles
+              New Article
             </Navbar.Link>
             <Navbar.Link style={stlylesBtn("#db3434")} onClick={logOutAccount}>
               LogOut
