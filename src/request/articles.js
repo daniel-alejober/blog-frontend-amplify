@@ -13,4 +13,14 @@ const createArticle = async (dataArtitle) => {
   }
 };
 
-export { createArticle };
+const getAllArticles = async () => {
+  try {
+    const data = await axiosClient.get("/articles");
+    return data;
+  } catch (error) {
+    const response = error.response;
+    return response;
+  }
+};
+
+export { createArticle, getAllArticles };

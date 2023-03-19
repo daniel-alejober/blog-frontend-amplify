@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, FileInput } from "flowbite-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -6,8 +7,13 @@ import Input from "../components/Input";
 import AlertR from "../components/Alert";
 import SpinnerR from "../components/Spinner";
 import { createArticle } from "../request/articles.js";
+import cleanTextHtml from "../utils/cleanTextHtml";
+import { logOut } from "../redux/userSlice";
+import { useDispatch } from "react-redux";
 
 const NewArticle = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [dataAlert, setDataAlert] = useState({
     colorAlert: "",
@@ -22,7 +28,7 @@ const NewArticle = () => {
     e.preventDefault();
     setLoading(true);
 
-    const cleanText = value.replace(/(<([^>]+)>)/gi, "");
+    const cleanText = cleanTextHtml(value);
     if ([cleanText, title, img].includes("")) {
       setAlertForm(true);
       setDataAlert({
@@ -39,7 +45,7 @@ const NewArticle = () => {
     const formData = new FormData();
     formData.append("photo", img);
     formData.append("title", title);
-    formData.append("content", cleanText);
+    formData.append("content", value);
 
     try {
       const data = await createArticle(formData);
@@ -62,7 +68,20 @@ const NewArticle = () => {
       }
     } catch (error) {
       const errorMsg = error.data.message;
-      if (errorMsg) {
+      const redirect = error.data.redirectTo;
+      if (redirect) {
+        setAlertForm(true);
+        setDataAlert({
+          colorAlert: "failure",
+          messageAlert: errorMsg,
+        });
+        setTimeout(() => {
+          setAlertForm(false);
+          setLoading(false);
+          dispatch(logOut());
+          navigate(redirect);
+        }, 3000);
+      } else {
         setAlertForm(true);
         setDataAlert({
           colorAlert: "failure",
@@ -85,6 +104,7 @@ const NewArticle = () => {
           messageAlert={dataAlert.messageAlert}
         />
       )}
+
       <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit}>
         <Input
           labelText="Title"
@@ -112,6 +132,7 @@ const NewArticle = () => {
           value={value}
           onChange={setValue}
         />
+
         {loading ? (
           <SpinnerR />
         ) : (
