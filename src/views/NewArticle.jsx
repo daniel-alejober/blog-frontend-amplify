@@ -9,17 +9,14 @@ import SpinnerR from "../components/Spinner";
 import { createArticle } from "../request/articles.js";
 import cleanTextHtml from "../utils/cleanTextHtml";
 import { logOut } from "../redux/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { hideAlert, showAlert } from "../redux/alertSlice";
 
 const NewArticle = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { show, color, message } = useSelector((state) => state.alert);
   const [loading, setLoading] = useState(false);
-  const [dataAlert, setDataAlert] = useState({
-    colorAlert: "",
-    messageAlert: "",
-  });
-  const [alertForm, setAlertForm] = useState(false);
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
   const [img, setImg] = useState("");
@@ -30,13 +27,11 @@ const NewArticle = () => {
 
     const cleanText = cleanTextHtml(value);
     if ([cleanText, title, img].includes("")) {
-      setAlertForm(true);
-      setDataAlert({
-        colorAlert: "failure",
-        messageAlert: "All inputs are required",
-      });
+      dispatch(
+        showAlert({ color: "failure", message: "All inputs are required" })
+      );
       setTimeout(() => {
-        setAlertForm(false);
+        dispatch(hideAlert());
         setLoading(false);
       }, 2500);
       return;
@@ -52,43 +47,31 @@ const NewArticle = () => {
 
       if (data.status !== 200) throw data;
       if (data.status === 200) {
-        setAlertForm(true);
-        setDataAlert({
-          colorAlert: "success",
-          messageAlert: data.data.message,
-        });
+        dispatch(showAlert({ color: "success", message: data.data.message }));
         setTimeout(() => {
           setValue("");
           setTitle("");
           setImg(null);
-          setAlertForm(false);
-          setLoading(false);
           document.getElementById("file").value = "";
+          dispatch(hideAlert());
+          setLoading(false);
         }, 2500);
       }
     } catch (error) {
       const errorMsg = error.data.message;
       const redirect = error.data.redirectTo;
       if (redirect) {
-        setAlertForm(true);
-        setDataAlert({
-          colorAlert: "failure",
-          messageAlert: errorMsg,
-        });
+        dispatch(showAlert({ color: "failure", message: errorMsg }));
         setTimeout(() => {
-          setAlertForm(false);
+          dispatch(hideAlert());
           setLoading(false);
           dispatch(logOut());
-          navigate(redirect);
         }, 3000);
+        navigate(redirect);
       } else {
-        setAlertForm(true);
-        setDataAlert({
-          colorAlert: "failure",
-          messageAlert: errorMsg,
-        });
+        dispatch(showAlert({ color: "failure", message: errorMsg }));
         setTimeout(() => {
-          setAlertForm(false);
+          dispatch(hideAlert());
           setLoading(false);
         }, 2500);
         return;
@@ -98,13 +81,7 @@ const NewArticle = () => {
 
   return (
     <div className="max-w-[70%] mx-auto my-16 ">
-      {alertForm && (
-        <AlertR
-          colorAlert={dataAlert.colorAlert}
-          messageAlert={dataAlert.messageAlert}
-        />
-      )}
-
+      {show && <AlertR colorAlert={color} messageAlert={message} />}
       <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit}>
         <Input
           labelText="Title"
