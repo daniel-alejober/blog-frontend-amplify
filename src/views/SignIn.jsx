@@ -4,23 +4,21 @@ import { Button } from "flowbite-react";
 import Input from "../components/Input";
 import AlertR from "../components/Alert";
 import SpinnerR from "../components/Spinner";
-import { useDispatch } from "react-redux";
 import { saveDataUser } from "../redux/userSlice";
 import { login } from "../request/account";
+import { useDispatch, useSelector } from "react-redux";
+import { hideAlert, showAlert } from "../redux/alertSlice";
 
 const SignIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { show, color, message } = useSelector((state) => state.alert);
 
   const [dataLogin, setDataLogin] = useState({
     email: "",
     password: "",
   });
-  const [dataAlert, setDataAlert] = useState({
-    colorAlert: "",
-    messageAlert: "",
-  });
-  const [alertForm, setAlertForm] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -31,13 +29,11 @@ const SignIn = () => {
     e.preventDefault();
     setLoading(true);
     if ([dataLogin.email, dataLogin.password].includes("")) {
-      setAlertForm(true);
-      setDataAlert({
-        colorAlert: "failure",
-        messageAlert: "All inputs are required",
-      });
+      dispatch(
+        showAlert({ color: "failure", message: "All inputs are required" })
+      );
       setTimeout(() => {
-        setAlertForm(false);
+        dispatch(hideAlert());
         setLoading(false);
       }, 2500);
       return;
@@ -56,13 +52,9 @@ const SignIn = () => {
     } catch (error) {
       const errorMsg = error.data.message;
       if (errorMsg) {
-        setAlertForm(true);
-        setDataAlert({
-          colorAlert: "failure",
-          messageAlert: errorMsg,
-        });
+        dispatch(showAlert({ color: "failure", message: errorMsg }));
         setTimeout(() => {
-          setAlertForm(false);
+          dispatch(hideAlert());
           setLoading(false);
         }, 2500);
         return;
@@ -72,12 +64,7 @@ const SignIn = () => {
 
   return (
     <div className="max-w-[70%] mx-auto my-16 ">
-      {alertForm && (
-        <AlertR
-          colorAlert={dataAlert.colorAlert}
-          messageAlert={dataAlert.messageAlert}
-        />
-      )}
+      {show && <AlertR colorAlert={color} messageAlert={message} />}
       <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit}>
         <Input
           labelText="Your email"

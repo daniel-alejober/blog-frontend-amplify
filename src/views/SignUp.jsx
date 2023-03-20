@@ -6,8 +6,12 @@ import AlertR from "../components/Alert";
 import SpinnerR from "../components/Spinner";
 import { emailRegex, nombreRegex } from "../utils/constants";
 import { createAccount } from "../request/account";
+import { useDispatch, useSelector } from "react-redux";
+import { hideAlert, showAlert } from "../redux/alertSlice";
 
 const SignUp = () => {
+  const dispatch = useDispatch();
+  const { show, color, message } = useSelector((state) => state.alert);
   const navigate = useNavigate();
   const [dataAccount, setDataAccount] = useState({
     email: "",
@@ -15,11 +19,6 @@ const SignUp = () => {
     password: "",
     repeatP: "",
   });
-  const [dataAlert, setDataAlert] = useState({
-    colorAlert: "",
-    messageAlert: "",
-  });
-  const [alertForm, setAlertForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -38,49 +37,43 @@ const SignUp = () => {
         dataAccount.repeatP,
       ].includes("")
     ) {
-      setAlertForm(true);
-      setDataAlert({
-        colorAlert: "failure",
-        messageAlert: "All inputs are required",
-      });
+      dispatch(
+        showAlert({ color: "failure", message: "All inputs are required" })
+      );
+
       setTimeout(() => {
-        setAlertForm(false);
+        dispatch(hideAlert());
         setLoading(false);
       }, 2500);
       return;
     }
     if (!emailRegex.test(dataAccount.email)) {
-      setAlertForm(true);
-      setDataAlert({
-        colorAlert: "failure",
-        messageAlert: "Enter a valid email",
-      });
+      dispatch(showAlert({ color: "failure", message: "Enter a valid email" }));
+
       setTimeout(() => {
-        setAlertForm(false);
+        dispatch(hideAlert());
         setLoading(false);
       }, 2500);
       return;
     }
     if (!nombreRegex.test(dataAccount.username)) {
-      setAlertForm(true);
-      setDataAlert({
-        colorAlert: "failure",
-        messageAlert: "Enter a valid name",
-      });
+      dispatch(showAlert({ color: "failure", message: "Enter a valid name" }));
+
       setTimeout(() => {
-        setAlertForm(false);
+        dispatch(hideAlert());
         setLoading(false);
       }, 2500);
       return;
     }
     if (dataAccount.password !== dataAccount.repeatP) {
-      setAlertForm(true);
-      setDataAlert({
-        colorAlert: "failure",
-        messageAlert: "Both passwords must be the same",
-      });
+      dispatch(
+        showAlert({
+          color: "failure",
+          message: "Both passwords must be the same",
+        })
+      );
       setTimeout(() => {
-        setAlertForm(false);
+        dispatch(hideAlert());
         setLoading(false);
       }, 2500);
       return;
@@ -94,27 +87,29 @@ const SignUp = () => {
 
       if (data.status !== 200) throw data;
       if (data.success) {
-        setAlertForm(true);
-        setDataAlert({
-          colorAlert: "success",
-          messageAlert: data.message,
-        });
+        dispatch(
+          showAlert({
+            color: "success",
+            message: data.message,
+          })
+        );
         setTimeout(() => {
-          setAlertForm(false);
+          dispatch(hideAlert());
           setLoading(false);
-          navigate("/signin");
         }, 2500);
+        navigate("/signin");
       }
     } catch (error) {
       const errorMsg = error.data.message;
       if (errorMsg) {
-        setAlertForm(true);
-        setDataAlert({
-          colorAlert: "failure",
-          messageAlert: errorMsg,
-        });
+        dispatch(
+          showAlert({
+            color: "failure",
+            message: errorMsg,
+          })
+        );
         setTimeout(() => {
-          setAlertForm(false);
+          dispatch(hideAlert());
           setLoading(false);
         }, 2500);
         return;
@@ -124,12 +119,7 @@ const SignUp = () => {
 
   return (
     <div className="max-w-[70%] mx-auto my-16 ">
-      {alertForm && (
-        <AlertR
-          colorAlert={dataAlert.colorAlert}
-          messageAlert={dataAlert.messageAlert}
-        />
-      )}
+      {show && <AlertR colorAlert={color} messageAlert={message} />}
       <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit}>
         <Input
           labelText="Your email"

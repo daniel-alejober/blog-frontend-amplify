@@ -23,4 +23,40 @@ const getAllArticles = async () => {
   }
 };
 
-export { createArticle, getAllArticles };
+const getArticleById = async (articleId) => {
+  try {
+    const data = await axiosClient.get(`/articles/get-article/${articleId}`);
+    return data;
+  } catch (error) {
+    const response = error.response;
+    return response;
+  }
+};
+
+const likeArticle = async (articleId) => {
+  try {
+    const data = await axiosClient.put(`/articles/like/${articleId}`, null);
+    return data;
+  } catch (error) {
+    const response = error.response;
+    return response;
+  }
+};
+
+const dislikeArticle = async (articleId) => {
+  try {
+    const data = await axiosClient.put(`/articles/dislike/${articleId}`, null);
+    return data;
+  } catch (error) {
+    const response = error.response;
+    return response;
+  }
+};
+
+export {
+  createArticle,
+  getAllArticles,
+  getArticleById,
+  likeArticle,
+  dislikeArticle,
+};
