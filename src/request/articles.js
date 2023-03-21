@@ -52,6 +52,39 @@ const dislikeArticle = async (articleId) => {
     return response;
   }
 };
+const getAllMyArticles = async () => {
+  try {
+    const data = await axiosClient.get("/articles/get-articles-by-user");
+    return data;
+  } catch (error) {
+    const response = error.response;
+    return response;
+  }
+};
+
+const deleteArticle = async (articleId) => {
+  try {
+    const data = await axiosClient.delete(
+      `/articles/delete-article/${articleId}`
+    );
+    return data;
+  } catch (error) {
+    const response = error.response;
+    return response;
+  }
+};
+const updateArticle = async (articleId, dataArtitle) => {
+  try {
+    const data = await axiosClient.put(
+      `/articles/update-article/${articleId}`,
+      dataArtitle
+    );
+    return data;
+  } catch (error) {
+    const response = error.response;
+    return response;
+  }
+};
 
 export {
   createArticle,
@@ -59,4 +92,7 @@ export {
   getArticleById,
   likeArticle,
   dislikeArticle,
+  getAllMyArticles,
+  deleteArticle,
+  updateArticle,
 };

@@ -73,6 +73,14 @@ const Header = () => {
           <>
             <Navbar.Link
               as={Link}
+              to="/myarticles"
+              style={stlylesBtn("#c834db")}
+              onClick={handleLinkClick}
+            >
+              My Articles
+            </Navbar.Link>
+            <Navbar.Link
+              as={Link}
               to="/newarticle"
               style={stlylesBtn("#3498db")}
               onClick={handleLinkClick}
