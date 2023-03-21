@@ -6,6 +6,8 @@ import {
   ProtectedRoutes,
   NewArticle,
   ArticleById,
+  MyArticles,
+  EditArticle,
 } from "./views";
 import Header from "./components/Header";
 
@@ -21,6 +23,8 @@ function App() {
           <Route path="/article/:articleId" element={<ArticleById />} />
           <Route element={<ProtectedRoutes />}>
             <Route path="/newarticle" element={<NewArticle />} />
+            <Route path="/myarticles" element={<MyArticles />} />
+            <Route path="/edit-article/:articleId" element={<EditArticle />} />
           </Route>
         </Routes>
       </div>

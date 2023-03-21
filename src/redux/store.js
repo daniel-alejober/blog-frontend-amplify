@@ -12,6 +12,7 @@ import {
 import storage from "redux-persist/lib/storage";
 import userSlice from "./userSlice";
 import alertSlice from "./alertSlice";
+import articlesSlice from "./articlesSlice";
 
 const persistConfig = {
   key: "root",
@@ -19,7 +20,11 @@ const persistConfig = {
   storage,
 };
 
-const rootReducer = combineReducers({ user: userSlice, alert: alertSlice });
+const rootReducer = combineReducers({
+  user: userSlice,
+  alert: alertSlice,
+  articles: articlesSlice,
+});
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
